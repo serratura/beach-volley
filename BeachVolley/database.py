@@ -1,8 +1,8 @@
 import asyncio
-from motor.motor_asyncio import AsyncIOMotorClient
+from pymongo import AsyncMongoClient
 
 async def init_database():
-    client = AsyncIOMotorClient("localhost", 27017)
+    client = AsyncMongoClient("localhost", 27017)
     db = client["beachvolley"]
 
     # 1. Recuperiamo la Tappa 1 esistente dal DB prima di fare qualsiasi cosa
