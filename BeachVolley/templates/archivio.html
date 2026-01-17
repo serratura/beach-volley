@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Archivio Tornei - Beach Volley</title>
+    <style>
+        body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        h1 { text-align: center; color: #1a1a1a; margin-top: 0; }
+
+        /* Stili per le card */
+        .tournament-section { background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 40px; }
+        .tournament-title { color: #2e7d32; border-bottom: 3px solid #4CAF50; padding-bottom: 10px; margin-top: 0; }
+        .phase-header { background: #4CAF50; color: white; padding: 10px 15px; margin-top: 25px; border-radius: 8px; font-size: 1.1em; }
+
+        .matches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .match-card {
+            background: #fff;
+            padding: 18px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border: 1px solid #eee;
+            border-left: 5px solid #2e7d32;
+        }
+
+        .teams { font-weight: bold; font-size: 1.05em; color: #333; margin-bottom: 8px; line-height: 1.2; }
+        .final-score { font-size: 1.6em; color: #2e7d32; font-weight: bold; margin-bottom: 5px; }
+        .sets-detail { color: #777; font-size: 0.9em; margin-bottom: 12px; font-family: monospace; }
+
+        .events-log {
+            background: #fdfdfd;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            margin-top: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+        }
+
+        .event-row {
+            display: flex;
+            gap: 10px;
+            border-bottom: 1px solid #f0f0f0;
+            padding: 6px 0;
+        }
+        .event-time { color: #888; font-weight: bold; min-width: 35px; }
+        .event-desc { color: #444; flex-grow: 1; }
+        .event-score { font-weight: bold; color: #2e7d32; }
+
+        button.toggle-btn {
+            background: #f8f9fa; border: 1px solid #ddd; padding: 10px;
+            border-radius: 8px; cursor: pointer; width: 100%; transition: 0.3s;
+            font-weight: 600; color: #555;
+        }
+        button.toggle-btn:hover { background: #e9ecef; border-color: #bbb; }
+
+        .back-btn {
+            background: #333; color: white; border: none; padding: 12px 20px;
+            border-radius: 8px; cursor: pointer; margin-bottom: 20px; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="back-btn" onclick="window.location.href='/'">⬅ Torna al Tabellone Live</button>
+        <h1>📚 Archivio Storico Tornei</h1>
+        <div id="archive-content">Caricamento in corso...</div>
+    </div>
+
+<script>
+// Funzione per formattare il tempo (es. 720 secondi -> 12')
+function formatTime(seconds) {
+    if (seconds === undefined || seconds === null) return "--'";
+    return Math.floor(seconds / 60) + "'";
+}
+
+async function renderArchive() {
+    try {
+        const response = await fetch('/api/archive');
+        const tornei = await response.json();
+        const container = document.getElementById('archive-content');
+        container.innerHTML = "";
+
+        tornei.forEach((torneo, tIdx) => {
+            const tSection = document.createElement('div');
+            tSection.className = "tournament-section";
+            tSection.innerHTML = `<h2 class="tournament-title">🏆 ${torneo.name}</h2>`;
+
+            const fasiOrder = ["Ottavi di Finale", "Quarti di Finale", "Semifinali", "Finali"];
+
+            fasiOrder.forEach(fase => {
+                const partite = torneo.partite[fase];
+                if (partite && partite.length > 0) {
+                    tSection.innerHTML += `<div class="phase-header">${fase}</div>`;
+                    const grid = document.createElement('div');
+                    grid.className = "matches-grid";
+
+                    partite.forEach((m, mIdx) => {
+                        // Creiamo un ID unico basato su indice torneo, fase e indice match
+                        const safeFase = fase.replace(/\s+/g, '');
+                        const divId = `events_t${tIdx}_${safeFase}_m${mIdx}`;
+
+                        grid.innerHTML += `
+                            <div class="match-card">
+                                <div class="teams">${m.teamA} <br>vs<br> ${m.teamB}</div>
+                                <div class="final-score">${m.score_sets[0]} - ${m.score_sets[1]}</div>
+                                <div class="sets-detail">${m.sets_history.map(s => `(${s[0]}-${s[1]})`).join(' ')}</div>
+                                <button class="toggle-btn" onclick="toggleEvents('${divId}')">📜 Vedi Cronologia</button>
+                                <div id="${divId}" class="events-log" style="display:none">
+                                    ${m.events && m.events.length > 0 ? m.events.map(e => `
+                                        <div class="event-row">
+                                            <span class="event-time">${formatTime(e.match_time)}</span>
+                                            <span class="event-desc">${e.description || e}</span>
+                                            <span class="event-score">${e.score || ''}</span>
+                                        </div>
+                                    `).join('') : '<p style="color:#999; text-align:center;">Nessun evento registrato.</p>'}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    tSection.appendChild(grid);
+                }
+            });
+            container.appendChild(tSection);
+        });
+    } catch (e) {
+        console.error(e);
+        document.getElementById('archive-content').innerHTML = "<p style='text-align:center;'>Errore nel caricamento dei dati dall'archivio.</p>";
+    }
+}
+
+function toggleEvents(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        const isHidden = el.style.display === 'none';
+        el.style.display = isHidden ? 'block' : 'none';
+    }
+}
+
+renderArchive();
+</script>
+</body>
+</html>

@@ -1,26 +1,37 @@
-import time
-import random
+import asyncio
 import json
-import paho.mqtt.client as mqtt
+import random
+from tornado.websocket import websocket_connect
 
-BROKER = "test.mosquitto.org"
-TOPIC = "sensor/temperature"
+# Indirizzo del tuo server Tornado
+WS_URL = "ws://127.0.0.1:8888/points"
 
-client = mqtt.Client()
-client.connect(BROKER, 1883)
 
-print("Sensore simulato avviato")
+async def match_simulator(match_id):
+    print(f"[MATCH {match_id}] Avviato")
+    try:
+        ws = await websocket_connect(WS_URL)
+        while True:
 
-while True:
-    value = round(random.uniform(18, 30), 2)
+            team = random.choice(["A", "B"])
+            payload = {"match_id": match_id, "team": team}
+            ws.write_message(json.dumps(payload))
+            await asyncio.sleep(random.uniform(0.5, 1.0))
 
-    payload = {
-        "sensor": "temperature",
-        "value": value,
-        "unit": "C"
-    }
+    except Exception as e:
+        print(f"❌ Errore match {match_id}: {e}")
 
-    client.publish(TOPIC, json.dumps(payload))
-    print("Pubblicato:", payload)
 
-    time.sleep(1)
+async def main():
+    print("Publisher Beach Volley avviato")
+    tasks = []
+    for i in range(1, 9):
+        tasks.append(match_simulator(i))
+    await asyncio.gather(*tasks)
+
+
+if __name__ == "__main__":
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("\nSimulazione interrotta.")

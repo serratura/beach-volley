@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Dettaglio Match - Beach Volley Live</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+
+        /* HEADER SQUADRE */
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .teams-large {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+        .vs { color: #bbb; font-size: 0.6em; margin: 0 20px; }
+
+        /* TABELLONE PUNTI */
+        .scoreboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .score-box {
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .score-box h3 { margin: 0; font-size: 0.8em; color: #4CAF50; text-transform: uppercase; letter-spacing: 1px; }
+        .big-number { font-size: 3.5em; font-weight: bold; margin-top: 5px; }
+
+        /* INFO BAR */
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            background: #fff;
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            font-weight: bold;
+        }
+        .live-tag { color: #ff4444; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* CRONACA */
+        .events-title { margin: 20px 0 10px 5px; font-size: 1.2em; display: flex; align-items: center; gap: 10px; }
+        .events-container {
+            background: white;
+            border-radius: 12px;
+            height: 400px;
+            overflow-y: auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        .event {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        .event-time {
+            color: #888;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            min-width: 70px;
+            background: #f0f0f0;
+            padding: 4px 8px;
+            border-radius: 5px;
+            margin-right: 20px;
+            text-align: center;
+        }
+        .event-text { font-size: 1em; color: #444; }
+        .event:first-child { background-color: #f9fff9; border-left: 4px solid #4CAF50; }
+
+        button.back-btn {
+            background: #666; color: white; border: none; padding: 10px 20px;
+            border-radius: 8px; cursor: pointer; margin-bottom: 15px; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button class="back-btn" onclick="window.history.back()">⬅ Torna al Tabellone</button>
+
+    <div class="header">
+        <div class="teams-large">
+            <div id="teamA">---</div>
+            <div class="vs">VS</div>
+            <div id="teamB">---</div>
+        </div>
+    </div>
+
+    <div class="scoreboard">
+        <div class="score-box">
+            <h3>Set Vinti</h3>
+            <div class="big-number" id="sets">0 - 0</div>
+        </div>
+        <div class="score-box">
+            <h3>Punti Set</h3>
+            <div class="big-number" id="points">0 - 0</div>
+        </div>
+    </div>
+
+    <div class="info-bar">
+        <div>STATO: <span id="status">---</span></div>
+        <div>⏱ TEMPO: <span id="timer">00:00</span></div>
+    </div>
+
+    <div class="events-title">📜 Cronaca in Tempo Reale</div>
+    <div class="events-container" id="events">
+        <p style="padding: 20px; text-align: center; color: #999;">In attesa di dati dal campo...</p>
+    </div>
+</div>
+
+<script>
+    // Recuperiamo l'ID match iniettato dal server
+    const matchId = "{{ match_id }}";
+    const ws = new WebSocket(`ws://${window.location.host}/ws`);
+
+    // Funzione per formattare i minuti
+    function formatTime(seconds) {
+    if (isNaN(seconds) || seconds < 0) return "0'";
+
+    // Calcoliamo quanti minuti interi sono passati
+    const minutes = Math.floor(seconds / 60);
+
+    // Restituiamo il formato richiesto (es: 15')
+    return minutes + "'";
+    }
+
+    ws.onmessage = (event) => {
+        try {
+            const msg = JSON.parse(event.data);
+            if (msg.type !== "match_update") return;
+
+            // Cerchiamo il match specifico in base all'ID
+            const match = msg.matches.find(m => m.id == matchId);
+            if (!match) return;
+
+            // 1. Aggiornamento Squadre e Punteggi
+            document.getElementById("teamA").textContent = match.teamA;
+            document.getElementById("teamB").textContent = match.teamB;
+            document.getElementById("sets").textContent = `${match.score_sets[0]} - ${match.score_sets[1]}`;
+            document.getElementById("points").textContent = `${match.points[0]} - ${match.points[1]}`;
+
+            // 2. Stato e Timer (sincronizzato ESATTAMENTE col server)
+            const statusEl = document.getElementById("status");
+            statusEl.textContent = match.status.toUpperCase();
+            statusEl.className = match.status === "live" ? "live-tag" : "";
+
+            document.getElementById("timer").textContent = formatTime(match.match_time);
+
+            // 3. Gestione Cronaca Eventi
+            const eventsDiv = document.getElementById("events");
+            if (match.events && match.events.length > 0) {
+                eventsDiv.innerHTML = "";
+                // Invertiamo l'ordine per mostrare l'ultimo evento in cima
+                [...match.events].reverse().forEach(evt => {
+                    const div = document.createElement("div");
+                    div.className = "event";
+
+                    // Gestione sia se l'evento è un oggetto che una stringa
+                    const time = evt.match_time !== undefined ? formatTime(evt.match_time) : "--:--";
+                    const desc = evt.description || evt;
+
+                    div.innerHTML = `
+                        <div class="event-time">${time}</div>
+                        <div class="event-text">${desc}</div>
+                    `;
+                    eventsDiv.appendChild(div);
+                });
+            }
+
+        } catch (err) {
+            console.error("Errore nel parsing dei dati WebSocket:", err);
+        }
+    };
+
+    ws.onclose = () => {
+        console.warn("Connessione WebSocket chiusa.");
+    };
+</script>
+</body>
+</html>
