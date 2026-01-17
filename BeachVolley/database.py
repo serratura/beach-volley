@@ -1,8 +1,10 @@
 import asyncio
 from pymongo import AsyncMongoClient
+import os
 
 async def init_database():
-    client = AsyncMongoClient("localhost", 27017)
+    mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+    client = AsyncMongoClient(mongo_url)
     db = client["beachvolley"]
 
     tappa_esistente = await db.tournaments.find_one({"name": "Tappa 1 Assoluti"})

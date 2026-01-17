@@ -6,12 +6,14 @@ import tornado.websocket
 import sys
 import os
 from pymongo import AsyncMongoClient
+import database
 
 if sys.platform.startswith("win"):
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 #  variabili globali per db, clients e fattori per il torneo
-mongo_client = AsyncMongoClient("localhost", 27017)
+mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+mongo_client = AsyncMongoClient(mongo_url)
 db = mongo_client["beachvolley"]
 clients = set()
 secondi_simulati = 45
@@ -41,9 +43,9 @@ async def carica_match_in_archivio(match):
             {"name": TOURNAMENT_NAME},
             {"$push": {f"partite.{current_phase}": match_data}}
         )
-        print(f"✅ ARCHIVIO: Salvato {match['teamA']} vs {match['teamB']} ({current_phase})")
+        print(f"ARCHIVIO: Salvato {match['teamA']} vs {match['teamB']} ({current_phase})")
     except Exception as e:
-        print(f"❌ ERRORE ARCHIVIO: {e}")
+        print(f"ERRORE ARCHIVIO: {e}")
 
 
 # funzioni logica torneo
@@ -272,6 +274,8 @@ def make_app():
 
 
 async def main():
+    await asyncio.sleep(2)
+    await database.init_database()
     await init_matches()
     make_app().listen(8888)
     print("http://localhost:8888")
