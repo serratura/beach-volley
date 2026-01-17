@@ -4,11 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="95f6b909-c8d6-46a4-b790-9ec176b5495e" name="Changes" comment="cambiamento db.py">
+    <list default="true" id="95f6b909-c8d6-46a4-b790-9ec176b5495e" name="Changes" comment="spero che ora funzioni il docker pt4">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/BeachVolley/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/BeachVolley/database.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BeachVolley/publisher.py" beforeDir="false" afterPath="$PROJECT_DIR$/BeachVolley/publisher.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BeachVolley/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/BeachVolley/server.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,8 +16,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Python Script" />
         <option value="HTML File" />
+        <option value="Python Script" />
       </list>
     </option>
   </component>
@@ -40,6 +38,7 @@
     "DefaultHtmlFileTemplate": "HTML File",
     "Python.database.executor": "Run",
     "Python.irpef.executor": "Run",
+    "Python.pls.executor": "Run",
     "Python.publisher.executor": "Run",
     "Python.server.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -100,13 +99,49 @@
       <option name="project" value="LOCAL" />
       <updated>1768635831139</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="spero che ora funzioni il docker">
+      <option name="closed" value="true" />
+      <created>1768636453460</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1768636453460</updated>
+    </task>
+    <task id="LOCAL-00006" summary="spero che ora funzioni il docker pt2">
+      <option name="closed" value="true" />
+      <created>1768637398823</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1768637398823</updated>
+    </task>
+    <task id="LOCAL-00007" summary="spero che ora funzioni il docker pt3">
+      <option name="closed" value="true" />
+      <created>1768637886537</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1768637886537</updated>
+    </task>
+    <task id="LOCAL-00008" summary="spero che ora funzioni il docker pt4">
+      <option name="closed" value="true" />
+      <created>1768638077866</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1768638077866</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="inizio progetto con base es scorso" />
     <MESSAGE value="fine progetto" />
     <MESSAGE value="cambiamento db.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="cambiamento db.py" />
+    <MESSAGE value="spero che ora funzioni il docker" />
+    <MESSAGE value="spero che ora funzioni il docker pt2" />
+    <MESSAGE value="spero che ora funzioni il docker pt3" />
+    <MESSAGE value="spero che ora funzioni il docker pt4" />
+    <option name="LAST_COMMIT_MESSAGE" value="spero che ora funzioni il docker pt4" />
   </component>
 </project>
