@@ -1,40 +1,65 @@
 import asyncio
 import json
-import random
 import os
-from tornado.websocket import websocket_connect
+from pymongo import AsyncMongoClient
 
-SERVER_NAME = os.environ.get("SERVER_NAME", "web") # 'web' è il nome del servizio nel yaml
-WS_URL = f"ws://{SERVER_NAME}:8888/points"
 
-async def match_simulator(match_id):
-    print(f"[MATCH {match_id}] Connessione a {WS_URL}...")
-    try:
-        ws = await websocket_connect(WS_URL)
-        print(f"[MATCH {match_id}] Connesso!")
-        while True:
-            team = random.choice(["A", "B"])
-            payload = {"match_id": match_id, "team": team}
-            ws.write_message(json.dumps(payload))
-            # Aspetta tra 0.5 e 1 secondo prima del prossimo punto
-            await asyncio.sleep(random.uniform(0.5, 1.0))
+async def init_database():
+    # In Docker l'host è 'db', in locale è 'localhost'
+    mongo_url = os.environ.get("MONGO_URL", "mongodb://db:27017")
+    client = AsyncMongoClient(mongo_url)
+    db = client["beachvolley"]
 
-    except Exception as e:
-        print(f"Errore match {match_id}: {e}")
-        # Riprova la connessione dopo 5 secondi se fallisce
-        await asyncio.sleep(5)
-        await match_simulator(match_id)
+    print("Inizializzazione Database in corso...")
 
-async def main():
-    print(f"Publisher Beach Volley avviato verso {WS_URL}")
-    tasks = []
-    # Simuliamo gli 8 match degli ottavi
-    for i in range(1, 9):
-        tasks.append(match_simulator(i))
-    await asyncio.gather(*tasks)
+    tappa1 = None
+    if os.path.exists("tappa_1_clean.json"):
+        with open("tappa_1_clean.json", "r", encoding="utf-8") as f:
+            tappa1 = json.load(f)
+            # Per sicurezza, se l'id fosse sfuggito, lo cancelliamo qui
+            tappa1.pop("_id", None)
+            print("✅ Tappa 1 caricata dal file pulito.")
+    else:
+        tappa1 = {
+            "name": "Tappa 1 Assoluti",
+            "played": True,
+            "partite": {"Ottavi di Finale": [], "Quarti di Finale": [], "Semifinali": [], "Finali": []}
+        }
+
+    await db.teams.delete_many({})
+    await db.tournaments.delete_many({})
+
+    teams = ["ALFIERI MANUEL - RANGHIERI ALEX", "ANDREATTA TIZIANO - BENZI DAVIDE",
+             "COTTAFAVA SAMUELE - DAL CORSO GIANLUCA", "PODESTA' SIMONE - MARTINO MATTEO",
+             "MARCHETTO TOBIA - DAL MOLIN DAVIDE", "BONIFAZI CARLO - ACERBI RAOUL", "SACRIPANTI MAURO - TITTA GIACOMO",
+             "SPADONI GIACOMO - LUISETTO MICHELE", "LUPO DANIELE - BORRACCINO DAVIDE", "KRUMINS DAVIS - CAMINATI MARCO",
+             "CECCOLI EDGARDO - CARUCCI ALESSANDRO", "GEROMIN FEDERICO - CAMOZZI MATTEO",
+             "AREZZO DI TRIFILETTI FRANCO - BIGARELLI LUCA", "VISCOVICH MARCO - ROSSI ENRICO",
+             "PIZZILEO FILIPPO - INGROSSO PAOLO", "PRETI ALESSANDRO - MUSSA FABRIZIO"]
+    punti = [400, 504, 300, 200, 300, 600, 700, 500, 900, 1200, 600, 700, 600, 200, 500, 400]
+
+    docs_teams = []
+
+    for i in range(len(teams)):
+        documento = {
+            "name": teams[i],
+            "points": punti[i]
+        }
+        docs_teams.append(documento)
+    await db.teams.insert_many(docs_teams)
+
+
+    tappa2 = {
+        "name": "Tappa 2 Assoluti",
+        "played": False,
+        "partite": {"Ottavi di Finale": [], "Quarti di Finale": [], "Semifinali": [], "Finali": []}
+    }
+
+    await db.tournaments.insert_many([tappa1, tappa2])
+
+    print("✨ Database pronto con ID rigenerati automaticamente!")
+    client.close()
+
 
 if __name__ == "__main__":
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        print("\nSimulazione interrotta.")
+    asyncio.run(init_database())
