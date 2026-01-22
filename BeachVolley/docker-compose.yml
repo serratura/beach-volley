@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # 1. IL DATABASE
   db:
     image: mongo:latest
     container_name: mongodb_beach
@@ -15,7 +14,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # 2. IL SERVER (TORNADO)
   web:
     build: .
     container_name: tornado_server
@@ -26,21 +24,17 @@ services:
         condition: service_healthy
     environment:
       - MONGO_URL=mongodb://db:27017
-    # Questo assicura che il server riparta se crasha per un errore di connessione iniziale
     restart: always
 
-  # 3. IL PUBLISHER
   publisher:
     build: .
     container_name: match_publisher
     depends_on:
       - web
-    # Sovrascriviamo il comando del Dockerfile per lanciare il publisher
     command: python publisher.py
     environment:
       - SERVER_URL=http://web:8888
     restart: on-failure
-    # Aspettiamo qualche secondo extra per essere sicuri che Tornado abbia caricato i match
     entrypoint: ["/bin/sh", "-c", "sleep 5 && python publisher.py"]
 
 volumes:
