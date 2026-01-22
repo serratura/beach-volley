@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="95f6b909-c8d6-46a4-b790-9ec176b5495e" name="Changes" comment="aggiunto file indicazioni">
+    <list default="true" id="95f6b909-c8d6-46a4-b790-9ec176b5495e" name="Changes" comment="commenti fuori posto">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BeachVolley/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/BeachVolley/database.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/BeachVolley/publisher.py" beforeDir="false" afterPath="$PROJECT_DIR$/BeachVolley/publisher.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -148,7 +146,15 @@
       <option name="project" value="LOCAL" />
       <updated>1768638938414</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="commenti fuori posto">
+      <option name="closed" value="true" />
+      <created>1769076825436</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1769076825436</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -161,6 +167,7 @@
     <MESSAGE value="spero che ora funzioni il docker pt4" />
     <MESSAGE value="godo ora il docker va" />
     <MESSAGE value="aggiunto file indicazioni" />
-    <option name="LAST_COMMIT_MESSAGE" value="aggiunto file indicazioni" />
+    <MESSAGE value="commenti fuori posto" />
+    <option name="LAST_COMMIT_MESSAGE" value="commenti fuori posto" />
   </component>
 </project>

@@ -68,7 +68,6 @@ async def init_matches():
         team_b = teams[id_b]
         nuovo_match = crea_oggetto_match(i + 1, team_a["name"], team_b["name"])
         live_matches.append(nuovo_match)
-    print(f"{TOURNAMENT_NAME} Iniziata!")
 
 #  logica torneo
 
@@ -120,7 +119,6 @@ def start_next_phase():
     else:
         current_phase = "Torneo Completato"
         live_matches = []
-    print(f"✨ Passaggio a: {current_phase}")
 
 
 # timer
