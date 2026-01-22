@@ -7199,8 +7199,8 @@ tappa_esistente = {
     }
 }
 
+
 async def init_database():
-    # In Docker usiamo 'db', in locale 'localhost'
     mongo_url = os.environ.get("MONGO_URL", "mongodb://db:27017")
     client = AsyncMongoClient(mongo_url)
     db = client["beachvolley"]
@@ -7231,7 +7231,7 @@ async def init_database():
 
     await db.tournaments.insert_many([tappa_esistente, tappa2])
 
-    print("✅ Database inizializzato correttamente con Tappa 1 e Tappa 2.")
+    print("Database inizializzato correttamente con Tappa 1 e Tappa 2.")
     client.close()
 
 

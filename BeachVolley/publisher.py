@@ -4,8 +4,9 @@ import random
 import os
 from tornado.websocket import websocket_connect
 
-SERVER_NAME = os.environ.get("SERVER_NAME", "web") # 'web' è il nome del servizio nel yaml
+SERVER_NAME = os.environ.get("SERVER_NAME", "web")  # 'web' è il nome del servizio nel yaml
 WS_URL = f"ws://{SERVER_NAME}:8888/points"
+
 
 async def match_simulator(match_id):
     print(f"[MATCH {match_id}] Connessione a {WS_URL}...")
@@ -24,6 +25,7 @@ async def match_simulator(match_id):
         # Riprova la connessione dopo 5 secondi se fallisce
         await asyncio.sleep(5)
         await match_simulator(match_id)
+
 
 async def main():
     print(f"Publisher Beach Volley avviato verso {WS_URL}")

@@ -202,8 +202,6 @@ async def apply_point(match, scoring_team):
                 start_next_phase()
 
 
-# handlers
-
 async def ws_broadcaster():
     while True:
         if clients:
@@ -222,6 +220,8 @@ async def ws_broadcaster():
                     clients.discard(c)
         await asyncio.sleep(1)
 
+
+# handlers
 
 class WSHandler(tornado.websocket.WebSocketHandler):
     def open(self): clients.add(self)
